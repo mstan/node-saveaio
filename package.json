@@ -1,0 +1,28 @@
+{
+  "name": "node-saveaio",
+  "version": "0.1.0",
+  "description": "All-in-one retro savefile toolkit: endian/word swap, whitespace trim/expand, and container/VC adapters (DexDrive, GameShark SPS, Action Replay XPS, Wii U/3DS VC).",
+  "license": "MIT",
+  "author": "Matthew Stanley <mstan@users.noreply.github.com>",
+  "repository": "github:mstan/SaveAIO",
+  "type": "module",
+  "main": "./index.cjs",
+  "module": "./index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs",
+      "default": "./index.js"
+    }
+  },
+  "sideEffects": false,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node --test tests.cjs"
+  },
+  "keywords": [
+    "retro", "save", "sram", "n64", "dexdrive",
+    "gba", "gameshark", "action replay",
+    "virtual console", "wii u", "3ds", "snes", "nes"
+  ]
+}
