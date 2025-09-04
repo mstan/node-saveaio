@@ -9,6 +9,78 @@ Plain-JS toolkit for working with retro **save files**. Provides small, composab
 
 ---
 
+
+---
+
+## Supported Operations
+
+✔️Tested & Supported
+🟨 Unimplemented
+❌ Not Supported
+🟦 Special Notes
+
+
+N64:
+  [1] _NOTE_: Many Nintendo 64 emulators and flash cartridges do not use any type of headers, but often require byte and/or word swapping in order to be compatible/interchangeable. As such, when trying to move from one system to another, it's recommended to try the 4 byte/word swapped variations to see which works.
+  Byte Swapping ✔️
+  Word Swapping ✔️
+  DexDrive:
+    Extract ✔️
+    Inject 🟨
+
+GBA:
+  Gameshark/Action Replay:
+    Extract ✔️
+    Inject 🟨
+  GameShark SP:
+    Extract ✔️
+    Inject 🟨
+
+3DS:
+  NES [Virtual Console]:
+    Extract
+    Inject
+  SNES [Virtual Console]:
+    Extract
+    Inject
+  Gameboy/Gameboy Color [Virtual Console]:
+    Extract
+    Inject
+  GBA [Virtual Console]:
+    Extract
+    Inject
+
+Wii:
+  NES [Virtual Console]:
+    Extract
+    Inject
+  SNES [Virtual Console]:
+    Extract
+    Inject
+  Sega Genesis [Virtual Console]:
+    Extract
+    Inject
+  Nintendo 64 [Virtual Console]:
+    [1] _NOTE_: Nintendo 64 Wii & Wii U titles do not have headers. However, they may be byte or word swapped.
+    Extract 🟦[1] 
+    Inject 🟦[1]
+Wii U:
+  NES [Virtual Console]:
+    Extract
+    Inject
+  SNES [Virtual Console]:
+    Extract
+    Inject
+  GBA [Virtual Console]:
+    Extract ✔️
+    Inject ✔️
+  DS [Virtual Console]:
+    Extract
+    Inject  
+
+
+
+
 ## Install
 
 ```bash
