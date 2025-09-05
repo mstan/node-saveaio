@@ -1,5 +1,27 @@
 # node-saveaio
 
+## About
+node-saveaio is a toolkit for working with old video game save files. Different consoles, emulators, and cheat devices often wrap the same raw save data in their own special containers, with extra headers or metadata that make the files look incompatible. This project strips away those differences so you can extract the actual save data, normalize it, and inject it back into other formats. In short, it makes your game saves interchangeable across devices that normally wouldn’t “speak the same language.”
+
+Right now, node-saveaio supports multiple consoles and container formats — including NES, SNES, N64, and GBA saves raw saves and also from various virtual consoles like Wii U / 3DS Virtual Console, plus GameShark SP saves (.gsv / .sps). With it, you can do things like:
+
+Take a GameShark SP save (.gsv) → extract the raw SRAM → inject it into a Wii U Virtual Console save so it works on modern emulators.
+
+Start with a Wii U Virtual Console container → pull out the raw save → repackage it as a GameShark SP file to use on original hardware.
+
+Normalize odd-sized raw saves (32 KB, 64 KB, 128 KB) so they match what your game or emulator expects.
+
+Convert N64 DexDrive saves into clean raw files, then generate byte-swapped or word-swapped variants for different emulators, flash cartridges, etc.
+
+```
+[ GameShark SP .gsv ]  →  [ RAW Save ]  →  [ Wii U VC .ves ]
+        ↑                                   ↓
+        └───────────────  interchangeable ────────────────┘
+```
+
+This makes it easy to move your progress between original hardware, cheat devices, and modern emulators without losing compatibility.
+
+## Features
 Plain-JS toolkit for working with retro **save files**.
 
 - Provides both **low-level buffer utilities** and **high-level class wrappers** for common save formats.
