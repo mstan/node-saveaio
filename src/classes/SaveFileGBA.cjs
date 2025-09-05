@@ -1,14 +1,17 @@
+// GameBoy Advance savefile wrapper with container auto-detection.
+// Supports: GameShark SP (GSSP), non-SP SharkPortSave (GS), Wii U VC container, and raw.
+
 const {
   identifyGBA_GSSP, decodeGBA_GSSP, injectGBA_GSSP,
 } = require("../adapters/gba.gssp.cjs");
 
 const {
-  identifyGBA_GS, decodeGBA_GS,
+  identifyGBA_GS, decodeGBA_GS, /* injectGBA_GS (not used here yet) */
 } = require("../adapters/gba.gs.cjs");
 
 const {
   identifyGBA_WiiU, decodeGBA_WiiU, injectGBA_WiiU,
-} = require("../adapters/gba.wiiu.cjs");
+} = require("../adapters/gba.wiiu.cjs"); // adjust if your WiiU adapter path differs
 
 const KB = 1024;
 
@@ -17,9 +20,10 @@ class SaveFileGBA {
     if (!Buffer.isBuffer(buffer)) throw new TypeError("SaveFileGBA expects a Buffer");
     this.original = Buffer.from(buffer);
     this.type = null;           // 'gssp' | 'gs' | 'wiiu' | 'raw'
-    this.saveFileType = null;   // label: 'gameshark_sp' | 'gameshark' | 'wii_u_virtual_console' | 'raw'
-    this.payload = null;        // decoded raw save data
-    this.detect();              // eager detect so props are usable immediately
+    this.saveFileType = null;   // 'gameshark_sp' | 'gameshark' | 'wii_u_virtual_console' | 'raw'
+    this.payload = null;        // decoded raw save data (Buffer) — may be lazy for GS
+    this._needsLazyDecode = false; // only true for GS to defer parse-time throws
+    this.detect();              // set type + maybe eager-decode
   }
 
   async init() { this.detect(); return this; }
@@ -30,26 +34,44 @@ class SaveFileGBA {
     if (identifyGBA_GSSP(this.original)) {
       this.type = "gssp";
       this.saveFileType = "gameshark_sp";
+      // Eager decode (keeps existing behavior/tests)
       this.payload = decodeGBA_GSSP(this.original);
+      this._needsLazyDecode = false;
     } else if (identifyGBA_GS(this.original)) {
       this.type = "gs";
       this.saveFileType = "gameshark";
-      this.payload = decodeGBA_GS(this.original); // may throw if not implemented
+      // Lazy decode for GS so constructor doesn't throw on malformed files.
+      // We'll actually parse when getRaw() is called.
+      this.payload = null;
+      this._needsLazyDecode = true;
     } else if (identifyGBA_WiiU(this.original)) {
       this.type = "wiiu";
       this.saveFileType = "wii_u_virtual_console";
+      // Eager decode (matches prior behavior/tests)
       this.payload = decodeGBA_WiiU(this.original);
+      this._needsLazyDecode = false;
     } else {
       this.type = "raw";
       this.saveFileType = "raw";
       this.payload = Buffer.from(this.original);
+      this._needsLazyDecode = false;
     }
     return this.type;
   }
 
-  getRaw() { if (!this.payload) this.detect(); return this.payload; }
+  getRaw() {
+    // Perform deferred GS decode here so tests can assert throws on getRaw()
+    if (this._needsLazyDecode && this.type === "gs" && this.payload == null) {
+      // Will throw here on corrupted containers (as the test expects)
+      this.payload = decodeGBA_GS(this.original);
+      this._needsLazyDecode = false;
+    }
+    if (!this.payload) this.detect();
+    return this.payload;
+  }
   extractRaw() { return this.getRaw(); }
 
+  // Re-encodes the current container with a new raw save (where supported)
   injectRaw(rawBuf) {
     if (!Buffer.isBuffer(rawBuf)) throw new TypeError("injectRaw expects a Buffer");
     if (!this.type) this.detect();
@@ -57,6 +79,9 @@ class SaveFileGBA {
     switch (this.type) {
       case "gssp":
         return injectGBA_GSSP(this.original, rawBuf);
+      // NOTE: GS injection is intentionally not wired yet per your rollback.
+      // case "gs":
+      //   return injectGBA_GS(this.original, rawBuf);
       case "wiiu":
         return injectGBA_WiiU(this.original, rawBuf);
       default:
@@ -67,21 +92,9 @@ class SaveFileGBA {
 
   /**
    * Normalize the current raw payload to a specific size (defaults to 32 KiB).
-   * - If raw === target: returns a copy.
-   * - If raw > target:
-   *     * If raw >= 2*target: compare density of the first two target-sized blocks; pick denser.
-   *     * Else: truncate to target.
-   * - If raw < target: pad with padByte (default 0xFF) to reach target.
-   *
-   * Rationale: many tools prefer 32 KiB, but some games legitimately use 64/128 KiB.
-   * This method is a pragmatic fitter, not a claim about the game’s native save size.
-   *
-   * @param {number} [targetBytes=32*1024]
-   * @param {{padByte?: number}} [opts]
-   * @returns {Buffer} normalized buffer of length targetBytes
    */
   normalizeSize(targetBytes = 32 * KB, opts = {}) {
-    const padByte = Number.isInteger(opts.padByte) ? opts.padByte & 0xFF : 0xFF;
+    const padByte = Number.isInteger(opts.padByte) ? (opts.padByte & 0xFF) : 0xFF;
     const src = this.getRaw();
 
     if (src.length === targetBytes) {
@@ -102,10 +115,9 @@ class SaveFileGBA {
     return out;
   }
 
-  /** Static convenience: normalize an arbitrary buffer (no instance needed). */
   static normalizeSize(buf, targetBytes = 32 * KB, opts = {}) {
     if (!Buffer.isBuffer(buf)) throw new TypeError("normalizeSize(buf): Buffer required");
-    const tmp = new SaveFileGBA(Buffer.from(buf)); // will set payload=buf since not a container
+    const tmp = new SaveFileGBA(Buffer.from(buf)); // not a container → stays 'raw'
     tmp.payload = Buffer.from(buf);
     return tmp.normalizeSize(targetBytes, opts);
   }

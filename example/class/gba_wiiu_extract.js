@@ -2,14 +2,8 @@
 // Writes both the raw payload and an optional normalized variant.
 //
 // Usage:
-//   node example/class/gba_wiiu_extract.js [inputBin] [outputRaw] [outputNormalized] [--size=32768]
+//   node example/class/gba_wiiu_extract.js
 //
-// Example:
-//   node example/class/gba_wiiu_extract.js \
-//     ./in/mmbn3blue_data_008_0000.bin \
-//     ./out/mmbn3blue_data_008_0000.raw.sav \
-//     ./out/mmbn3blue_data_008_0000.norm.sav \
-//     --size=32768
 
 const { readFile, writeFile, mkdir } = require("fs/promises");
 const { dirname, resolve } = require("path");

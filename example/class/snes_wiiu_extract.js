@@ -10,7 +10,7 @@ const { dirname, resolve } = require("path");
 const { SaveFileSNES } = require("node-saveaio");
 
 async function main() {
-  // Wii U VC container extracted from a SNES title (e.g. via Checkpoint)
+  // Wii U VC container extracted from a SNES title (e.g., via SaveMii)
   const inputBin  = "./in/WUP-N-JAAE.bin";
   // Headerless raw SNES SRAM
   const outputRaw = "./out/super_mario_world.sav";

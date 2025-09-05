@@ -1,6 +1,5 @@
 // SNES 3DS Virtual Console adapter
-// Uses the same structure as Wii U VC (48-byte header).
-// Delegates to Wii U implementation. Reinjection throws as well.
+// Delegates to the Wii U implementation (same 48-byte header, magic, checksum).
 
 const {
   identifySNES_WiiU,
@@ -9,6 +8,7 @@ const {
 } = require("./snes.wiiu.cjs");
 
 function identifySNES_3DS(buf) {
+  // 3DS uses the same MAGIC at 0x10..0x17; Wii U identify is sufficient
   return identifySNES_WiiU(buf);
 }
 
@@ -16,8 +16,9 @@ function decodeSNES_3DS(container) {
   return decodeSNES_WiiU(container);
 }
 
-function injectSNES_3DS() {
-  return injectSNES_WiiU();
+function injectSNES_3DS(originalContainer, payload, opts = {}) {
+  // Forward args so checksum/preset/sizeKiB all work the same way
+  return injectSNES_WiiU(originalContainer, payload, opts);
 }
 
 module.exports = {
