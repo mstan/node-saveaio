@@ -61,22 +61,23 @@ _NOTE_: Many N64 emulators and flash cartridges do not use headers, but often re
     - Inject 🟦  (no special headers, see note above)  
 
 
-### Gameboy [Color] (GB/GBC)
-  - 3DS virtual console
+### Gameboy [Color] (GB/GBC)  
+  - 3DS virtual console  
     - Extract 🟪  
-    - Inject 🟪    
-
-### Game Boy Advance (GBA)
-- GameShark / Action Replay  
+    - Inject 🟪  
+### Game Boy Advance (GBA)  
+- GameShark  
   - Extract 🟨  
   - Inject 🟨  
 - GameShark SP  
   - Extract ✔️  
   - Inject 🟨  
+- Action Replay  
+  - Extract ❌  
+  - Inject ❌  
 - Wii U Virtual Console  
   - Extract ✔️  
   - Inject ✔️  
-
 ### Nintendo DS
 - Wii U Virtual Console  
   - Extract 🟨  
