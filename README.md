@@ -45,6 +45,9 @@ If you don't see an operation here, please open an issue.
 🟪 N/A (No conversion required)  
 
 ### Nintendo Entertainment System (NES)  
+- NES Mini
+  - Extract 🟨 (Untested)  
+  - Inject 🟨 (Untested)  
 - 3DS Virtual Console  
   - Extract 🟪  
   - Inject 🟪  
@@ -56,9 +59,15 @@ If you don't see an operation here, please open an issue.
   - Inject 🟨  
 
 ### Super Nintendo (SNES)  
+- SNES Mini
+  - Extract 🟨 (Untested)  
+  - Inject 🟨 (Untested)  
 - 3DS Virtual Console (New 3DS only)  
   - Extract ✔️  
   - Inject ✔️  
+- Wii Virtual Console  
+  - Extract 🟨 (Untested)  
+  - Inject 🟨 (Untested)  
 - Wii U Virtual Console  
   - Extract ✔️  
   - Inject ✔️  
