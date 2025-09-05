@@ -14,13 +14,13 @@ Plain-JS toolkit for working with retro **save files**.
 ---
 
 ## Supported Operations
+If you don't see an operation here, please open an issue.
 
 ✔️ Tested & Supported  
 🟨 Untested  
 ❌ Not Supported  
 🟦 Special Notes  
 🟪 N/A (No conversion required)  
-
 
 ### Nintendo Entertainment System (NES)  
 - 3DS Virtual Console  
@@ -39,7 +39,7 @@ Plain-JS toolkit for working with retro **save files**.
   - Inject ✔️  
 - Wii U Virtual Console  
   - Extract ✔️  
-  - Inject 🟨  
+  - Inject ✔️  
 
 ### Nintendo 64 (N64)  
 _NOTE_: Many N64 emulators and flash cartridges do not use headers, but often require byte and/or word swapping. Try all 4 variants (raw, byteswapped, wordswapped, both).  
