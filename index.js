@@ -22,6 +22,7 @@ export const injectGBA_GSSP   = lib.injectGBA_GSSP;
 
 export const identifyGBA_GS   = lib.identifyGBA_GS;
 export const decodeGBA_GS     = lib.decodeGBA_GS;
+export const injectGBA_GS     = lib.injectGBA_GS; // newly exposed
 
 // GBA Wii U VC
 export const decodeGBA_WiiU    = lib.decodeGBA_WiiU;
@@ -44,10 +45,10 @@ export const injectSNES_3DS    = lib.injectSNES_3DS;
 export const identifySNES_3DS  = lib.identifySNES_3DS;
 
 // Classes
-export const SaveFileGBA = lib.SaveFileGBA;
-export const SaveFileNES = lib.SaveFileNES;
+export const SaveFileGBA  = lib.SaveFileGBA;
+export const SaveFileNES  = lib.SaveFileNES;
 export const SaveFileSNES = lib.SaveFileSNES;
-export const SaveFileN64 = lib.SaveFileN64;
+export const SaveFileN64  = lib.SaveFileN64;
 
 // Default export
 export default lib;

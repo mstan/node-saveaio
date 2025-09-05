@@ -53,4 +53,18 @@ function encodeDexDrive(sourceContainer, payload) {
   return Buffer.concat([header, payload]);
 }
 
-module.exports = { identifyN64_DexDrive, decodeDexDrive, encodeDexDrive };
+module.exports = {
+  identifyN64_DexDrive,
+  decodeDexDrive,
+  encodeDexDrive,
+
+  // Expose constants in case tests/scripts want to assert offsets
+  constants: {
+    DEX_HDR_START,
+    DEX_HDR_END,
+    DEX_HDR_TEXT,
+    DEX_COMMENTS_START,
+    DEX_COMMENTS_END,
+    DEX_SAVE_START,
+  },
+};

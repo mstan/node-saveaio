@@ -16,7 +16,7 @@ Plain-JS toolkit for working with retro **save files**.
 ## Supported Operations
 
 ✔️ Tested & Supported  
-🟨 Unimplemented  
+🟨 Untested  
 ❌ Not Supported  
 🟦 Special Notes  
 🟪 N/A (No conversion required)  
@@ -24,13 +24,13 @@ Plain-JS toolkit for working with retro **save files**.
 
 ### Nintendo Entertainment System (NES)  
 - 3DS Virtual Console  
-  - Extract 🟨  
-  - Inject 🟨  
+  - Extract 🟪  
+  - Inject 🟪  
 - Wii Virtual Console  
   - Extract 🟨  
   - Inject 🟨  
 - Wii U Virtual Console  
-  - Extract 🟨  
+  - Extract ✔️  
   - Inject 🟨  
 
 ### Super Nintendo (SNES)  
@@ -49,7 +49,7 @@ _NOTE_: Many N64 emulators and flash cartridges do not use headers, but often re
   - Word Swapping ✔️  
 - DexDrive  
     - Extract ✔️  
-    - Inject 🟨  
+    - Inject 🟨 (Untested)  
 - Wii Virtual Console  
     - Extract 🟦 (no special headers, see note above)  
     - Inject 🟦 (no special headers, see note above)  
@@ -67,21 +67,24 @@ _NOTE_: Many N64 emulators and flash cartridges do not use headers, but often re
     - Inject 🟪  
 ### Game Boy Advance (GBA)  
 - GameShark  
-  - Extract 🟨  
-  - Inject 🟨  
+  - Extract ✔️  
+  - Inject 🟨 (Untested)  
 - GameShark SP  
   - Extract ✔️  
-  - Inject 🟨  
+  - Inject 🟨 (Untested)  
 - Action Replay  
   - Extract ❌  
   - Inject ❌  
+- 3DS Virtual Console
+  - Extract 🟪
+  - Inject 🟪
 - Wii U Virtual Console  
   - Extract ✔️  
   - Inject ✔️  
 ### Nintendo DS
 - Wii U Virtual Console  
-  - Extract 🟨  
-  - Inject 🟨  
+  - Extract 🟪  
+  - Inject 🟪  
 
 ---
 
@@ -128,7 +131,7 @@ console.log(s.getMetadata());
 Other classes follow the same pattern:
 
 - `SaveFileNES` (Wii U Virtual Console `.ves`)
-- `SaveFileSNES` (3DS / Wii U Virtual Console — reinjection not supported)
+- `SaveFileSNES` (3DS / Wii U Virtual Console)
 - `SaveFileN64` (DexDrive detection/extract; use buffer utilities for variants)
 
 See the `example/class/` directory for complete runnable scripts:
