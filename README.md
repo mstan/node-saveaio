@@ -131,8 +131,11 @@ full target-ROM gameplay has not been qualified.
 | `oot-n64` | US/European retail 32 KiB SRAM, valid main/backup checksums, basic Latin file names | Preserve game records; select destination English in the SRAM header. Detect big-endian, byte-swapped, word-swapped or little-endian32 storage. |
 | `metroid-zero-mission` | US/European 32 KiB saves with version005 headers and English language records | Update all three regional headers and their checksums. Preserve game progress, empty slots and auxiliary data. |
 
-Other games, destination languages, revisions and container layouts are unsupported by
-this API. In particular, a combined N64 emulator `.srm` is not a single raw
+Validation recognizes these layouts; it does not certify a ROM revision or
+ROM-hack compatibility. Raw OoT SRAM has no validated revision discriminator.
+Unknown game IDs, wrong sizes or containers, and invalid marker, checksum,
+name or language fields are rejected; Zero Mission headers must be version005.
+In particular, a combined N64 emulator `.srm` is not a single raw
 cartridge image. Decode a supported container separately before conversion.
 Existing container and byte-order utilities keep their previous behavior.
 
