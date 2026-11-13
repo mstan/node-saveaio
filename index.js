@@ -2,6 +2,8 @@
 import lib from "./src/lib.cjs";
 
 export const SaveFile = lib.SaveFile;
+export const inspectSaveRegion = lib.inspectSaveRegion;
+export const convertSaveRegion = lib.convertSaveRegion;
 
 // Buffer helpers
 export const swapEndian = lib.swapEndian;

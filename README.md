@@ -119,6 +119,47 @@ _NOTE_: Many N64 emulators and flash cartridges do not use headers, but often re
 
 ---
 
+## Experimental region profiles
+
+`inspectSaveRegion` validates a known retail layout; `convertSaveRegion` returns
+a new raw Buffer. Neither function writes files, repairs corrupt records, or
+infers the game from its filename or size. These are format-level profiles;
+full target-ROM gameplay has not been qualified.
+
+| Game ID | Supported input | Conversion |
+| --- | --- | --- |
+| `oot-n64` | US/European retail 32 KiB SRAM, valid main/backup checksums, basic Latin file names | Preserve game records; select destination English in the SRAM header. Detect big-endian, byte-swapped, word-swapped or little-endian32 storage. |
+| `metroid-zero-mission` | US/European 32 KiB saves with version005 headers and English language records | Update all three regional headers and their checksums. Preserve game progress, empty slots and auxiliary data. |
+
+Other games, destination languages, revisions and container layouts are unsupported by
+this API. In particular, a combined N64 emulator `.srm` is not a single raw
+cartridge image. Decode a supported container separately before conversion.
+Existing container and byte-order utilities keep their previous behavior.
+
+```js
+import { readFile, writeFile } from "node:fs/promises";
+import { inspectSaveRegion, convertSaveRegion } from "node-saveaio";
+
+const source = await readFile("./original.sra");
+console.log(inspectSaveRegion(source, { game: "oot-n64", region: "eu" }));
+const converted = convertSaveRegion(source, {
+  game: "oot-n64", fromRegion: "eu", toRegion: "us",
+  outputByteOrder: "be", // omit or use "same" to retain input storage order
+});
+await writeFile("./converted-us.sra", converted, { flag: "wx" });
+```
+
+For OoT, `inputByteOrder` defaults to `"auto"`; explicit values are `"be"`,
+`"byte-swapped"`, `"word-swapped"`, and `"le32"`. Selecting a destination region
+chooses its English language value; a same-region operation keeps the existing
+language. Byte-order options apply only to N64. For Zero Mission use the same
+`game`, `fromRegion` and `toRegion` options without byte-order options.
+
+The layouts follow the retail game readers and writers in
+[OoT's SRAM implementation](https://github.com/zeldaret/oot/blob/14759abf9abb4295de142cdc1452998630ea70fb/src/code/z_sram.c),
+[OoT's save definitions](https://github.com/zeldaret/oot/blob/14759abf9abb4295de142cdc1452998630ea70fb/include/save.h),
+and [Zero Mission's save implementation](https://github.com/metroidret/mzm/blob/0cfa48a37a949d4d3f289998a3af9e15bbf4afb5/src/save_file.c).
+
 ## Install
 
 ```
