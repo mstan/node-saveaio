@@ -58,8 +58,11 @@ const { SaveFileGBA } = require("./classes/SaveFileGBA.cjs");
 const { SaveFileNES } = require("./classes/SaveFileNES.cjs");
 const { SaveFileSNES } = require("./classes/SaveFileSNES.cjs");
 const { SaveFileN64 } = require("./classes/SaveFileN64.cjs");
+const { inspectSaveRegion, convertSaveRegion } = require("./regions.cjs");
 
 module.exports = {
+  inspectSaveRegion,
+  convertSaveRegion,
   // Base
   SaveFile,
 
