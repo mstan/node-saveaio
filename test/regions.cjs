@@ -61,17 +61,40 @@ function zm() {
 const oo = { game: "oot-n64", fromRegion: "eu", toRegion: "us" };
 const mz = { game: "metroid-zero-mission", fromRegion: "us", toRegion: "eu" };
 
-test("OoT converts English header in all four orders, preserves every game record and input", () => {
+test("OoT converts English header and actual filename font indices in all four orders", () => {
   for (const [mask, order] of [[0, "be"], [1, "byte-swapped"], [2, "word-swapped"], [3, "le32"]]) {
     const source = reorder(oot(), mask), original = Buffer.from(source);
     assert.equal(inspectSaveRegion(source, { game: oo.game, region: "eu" }).byteOrder, order);
-    const output = convertSaveRegion(source, oo), expected = Buffer.from(original);
-    expected[2 ^ mask] = 1;
-    assert.deepEqual(output, expected); assert.deepEqual(source, original);
+    const output = convertSaveRegion(source, oo), expected = oot();
+    expected[2] = 1;
+    for (const n of [0, 3]) {
+      const at = 0x20 + n * 0x1450;
+      Buffer.from('abdfdfdfdfdfdfdf', 'hex').copy(expected, at + 0x24);
+      putSum16(expected, at);
+    }
+    assert.deepEqual(output, reorder(expected, mask)); assert.deepEqual(source, original);
     assert.notStrictEqual(output, source);
     assert.deepEqual(convertSaveRegion(output, { ...oo, fromRegion: "us", toRegion: "eu" }), original);
     assert.equal(inspectSaveRegion(output, { game: oo.game, region: "us" }).slots.filter(s => s.occupied).length, 2);
   }
+});
+test("OoT maps Latin case, digits, space and punctuation, rejects NTSC kana, and preserves progress", () => {
+  const source = oot();
+  for (const n of [0, 3]) {
+    const at = 0x20 + n * 0x1450;
+    Buffer.from('00090a23343e3f40', 'hex').copy(source, at + 0x24);
+    putSum16(source, at);
+  }
+  const output = convertSaveRegion(source, oo);
+  for (const n of [0, 3]) {
+    const at = 0x20 + n * 0x1450;
+    assert.equal(output.subarray(at + 0x24, at + 0x2c).toString('hex'), '0009abc4d5dfe4ea');
+    assert.deepEqual(output.subarray(at + 0x2c, at + 0x1352), source.subarray(at + 0x2c, at + 0x1352));
+  }
+  assert.deepEqual(convertSaveRegion(output, { ...oo, fromRegion: 'us', toRegion: 'eu' }), source);
+  assert.deepEqual(convertSaveRegion(output, { ...oo, fromRegion: 'us', toRegion: 'us' }), output);
+  const kana = Buffer.from(output); kana[0x20 + 0x24] = 0x0a; putSum16(kana, 0x20);
+  assert.throws(() => convertSaveRegion(kana, { ...oo, fromRegion: 'us', toRegion: 'eu' }), /name character/);
 });
 test("OoT accepts an explicit destination order and preserves same-region language", () => {
   const source = oot(); source[2] = 2;

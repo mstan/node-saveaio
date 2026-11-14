@@ -31,6 +31,22 @@ function ootDecode(buffer, inputByteOrder = "auto") {
   if (matches.length !== 1) throw new Error("Unrecognized or ambiguous OoT SRAM header/byte order");
   return matches[0];
 }
+// The retail filename font indices differ from the dialogue character set.
+// PAL: digits 00..09, Latin letters 0A..3D, space 3E, dash 3F, period 40.
+// NTSC: digits 00..09, Latin letters AB..DE, space DF, dash E4, period EA.
+function ootNameToPal(value, region) {
+  if (region === "eu") return value <= 0x40 ? value : -1;
+  if (value <= 9) return value;
+  if (value >= 0xab && value <= 0xdf) return value - 0xa1;
+  if (value === 0xe4) return 0x3f;
+  if (value === 0xea) return 0x40;
+  return -1;
+}
+function ootNameFromPal(value, region) {
+  if (region === "eu" || value <= 9) return value;
+  if (value <= 0x3e) return value + 0xa1;
+  return value === 0x3f ? 0xe4 : 0xea;
+}
 function ootInspect(buffer, region, inputByteOrder) {
   const decoded = ootDecode(buffer, inputByteOrder), data = decoded.data;
   if (data[0] > 3 || data[1] > 1 || data[2] > (region === "eu" ? 2 : 1))
@@ -46,9 +62,7 @@ function ootInspect(buffer, region, inputByteOrder) {
     let checksum = 0;
     for (let i = 0; i < 0x1352; i += 2) checksum = (checksum + slot.readUInt16BE(i)) & 0xffff;
     if (checksum !== slot.readUInt16BE(0x1352)) throw new Error(`OoT slot ${n} checksum mismatch`);
-    // PAL and US share the basic Latin file-name codes. Other alphabets
-    // require a separately qualified character mapping, not a guessed swap.
-    if (occupied && slot.subarray(0x24, 0x2c).some(value => value > 0x3e))
+    if (occupied && slot.subarray(0x24, 0x2c).some(value => ootNameToPal(value, region) < 0))
       throw new Error(`OoT slot ${n} uses an unsupported name character`);
     slots.push({ index: n, occupied, checksum });
   }
@@ -114,9 +128,20 @@ function convertSaveRegion(buffer, options) {
   if (options.game === "oot-n64") {
     const result = ootInspect(buffer, options.fromRegion, options.inputByteOrder);
     const data = result.data;
-    // US English=1; PAL English=0. File records and their checksums are
-    // unchanged. This intentionally chooses English in the destination.
-    if (options.fromRegion !== options.toRegion) data[2] = options.toRegion === "us" ? 1 : 0;
+    if (options.fromRegion !== options.toRegion) {
+      // US English=1; PAL English=0. Translate only supported filename
+      // glyph indices; all progress fields and unoccupied records stay exact.
+      data[2] = options.toRegion === "us" ? 1 : 0;
+      for (const slot of result.slots) {
+        if (!slot.occupied) continue;
+        const offset = 0x20 + slot.index * 0x1450;
+        for (let i = 0x24; i < 0x2c; i++)
+          data[offset + i] = ootNameFromPal(ootNameToPal(data[offset + i], options.fromRegion), options.toRegion);
+        let checksum = 0;
+        for (let i = 0; i < 0x1352; i += 2) checksum = (checksum + data.readUInt16BE(offset + i)) & 0xffff;
+        data.writeUInt16BE(checksum, offset + 0x1352);
+      }
+    }
     return orderCopy(data, !options.outputByteOrder || options.outputByteOrder === "same" ? result.byteOrder : options.outputByteOrder);
   }
   zmInspect(buffer, options.fromRegion);

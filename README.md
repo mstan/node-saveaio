@@ -123,12 +123,12 @@ _NOTE_: Many N64 emulators and flash cartridges do not use headers, but often re
 
 `inspectSaveRegion` validates a known retail layout; `convertSaveRegion` returns
 a new raw Buffer. Neither function writes files, repairs corrupt records, or
-infers the game from its filename or size. These are format-level profiles;
-full target-ROM gameplay has not been qualified.
+infers the game from its filename or size. Their supported layouts and runtime
+qualification are limited to the cases below.
 
 | Game ID | Supported input | Conversion |
 | --- | --- | --- |
-| `oot-n64` | US/European retail 32 KiB SRAM, valid main/backup checksums, basic Latin file names | Preserve game records; select destination English in the SRAM header. Detect big-endian, byte-swapped, word-swapped or little-endian32 storage. |
+| `oot-n64` | US/European retail 32 KiB SRAM, valid main/backup checksums, Latin letters, digits, spaces, dash and period in file names | Preserve game progress; translate regional filename glyph indices and update occupied-slot checksums; select destination English in the SRAM header. Detect big-endian, byte-swapped, word-swapped or little-endian32 storage. |
 | `metroid-zero-mission` | US/European 32 KiB saves with version005 headers and English language records | Update all three regional headers and their checksums. Preserve game progress, empty slots and auxiliary data. |
 
 Validation recognizes these layouts; it does not certify a ROM revision or
@@ -138,6 +138,14 @@ name or language fields are rejected; Zero Mission headers must be version005.
 In particular, a combined N64 emulator `.srm` is not a single raw
 cartridge image. Decode a supported container separately before conversion.
 Existing container and byte-order utilities keep their previous behavior.
+
+OoT PAL-to-US conversion has been checked with the retail US 1.0 target in
+software emulation: existing file names and progress load, the native Save
+command writes a valid save, and that save loads again in a fresh process.
+The corresponding no-Save and blank-save controls were checked separately.
+This does not qualify every ROM revision, physical hardware, or emulator.
+Zero Mission remains source-format qualified; its European target-ROM
+save-selection and gameplay checks are outstanding.
 
 ```js
 import { readFile, writeFile } from "node:fs/promises";
@@ -161,6 +169,7 @@ language. Byte-order options apply only to N64. For Zero Mission use the same
 The layouts follow the retail game readers and writers in
 [OoT's SRAM implementation](https://github.com/zeldaret/oot/blob/14759abf9abb4295de142cdc1452998630ea70fb/src/code/z_sram.c),
 [OoT's save definitions](https://github.com/zeldaret/oot/blob/14759abf9abb4295de142cdc1452998630ea70fb/include/save.h),
+[OoT's filename encoding](https://github.com/zeldaret/oot/blob/14759abf9abb4295de142cdc1452998630ea70fb/include/message.h),
 and [Zero Mission's save implementation](https://github.com/metroidret/mzm/blob/0cfa48a37a949d4d3f289998a3af9e15bbf4afb5/src/save_file.c).
 
 ## Install
