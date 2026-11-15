@@ -16,13 +16,31 @@
     }
   },
   "sideEffects": false,
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "node --test"
   },
   "keywords": [
-    "retro", "save", "sram", "n64", "dexdrive",
-    "gba", "gameshark", "action replay",
-    "virtual console", "wii u", "3ds", "snes", "nes"
+    "retro",
+    "save",
+    "sram",
+    "n64",
+    "dexdrive",
+    "gba",
+    "gameshark",
+    "action replay",
+    "virtual console",
+    "wii u",
+    "3ds",
+    "snes",
+    "nes"
+  ],
+  "files": [
+    "index.js",
+    "index.cjs",
+    "src/",
+    "example/"
   ]
 }
