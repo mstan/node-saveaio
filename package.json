@@ -1,6 +1,6 @@
 {
   "name": "node-saveaio",
-  "version": "0.1.0",
+  "version": "0.1.0-rc.1",
   "description": "All-in-one retro savefile toolkit: endian/word swap, whitespace trim/expand, and container/VC adapters (DexDrive, GameShark SPS, Action Replay XPS, Wii U/3DS VC).",
   "license": "MIT",
   "author": "Matthew Stanley <mstan@users.noreply.github.com>",
