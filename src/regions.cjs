@@ -142,7 +142,7 @@ function convertSaveRegion(buffer, options) {
         data.writeUInt16BE(checksum, offset + 0x1352);
       }
     }
-    return orderCopy(data, !options.outputByteOrder || options.outputByteOrder === "same" ? result.byteOrder : options.outputByteOrder);
+    return orderCopy(data, options.outputByteOrder === undefined || options.outputByteOrder === "same" ? result.byteOrder : options.outputByteOrder);
   }
   zmInspect(buffer, options.fromRegion);
   const out = Buffer.from(buffer);

@@ -114,6 +114,11 @@ test("OoT rejects corrupt main/backup records, header, unknown alphabet and expl
   assert.throws(() => convertSaveRegion(name, oo), /name character/);
   assert.throws(() => convertSaveRegion(oot(), { ...oo, inputByteOrder: "le32" }), /header/);
   assert.throws(() => convertSaveRegion(oot(), { ...oo, outputByteOrder: "unknown" }), /byte order/);
+  for (const outputByteOrder of [null, false, 0, ""]) {
+    const source = oot(), original = Buffer.from(source);
+    assert.throws(() => convertSaveRegion(source, { ...oo, outputByteOrder }), /byte order/);
+    assert.deepEqual(source, original);
+  }
   assert.throws(() => convertSaveRegion(oot(), { ...oo, fromRegion: "us" }), /select English/);
 });
 test("Zero Mission rewrites all three authenticated headers, keeps progress/auxiliary bytes and round trips", () => {
